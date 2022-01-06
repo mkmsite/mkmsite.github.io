@@ -66,6 +66,7 @@ hr.small {
   font-weight: 800;
   letter-spacing: 1px;
 }
+
 @media only screen and (min-width: 768px) {
   .navbar-custom {
     background: transparent;
@@ -407,3 +408,18 @@ body {
  color: black;
 }
 
+@media only screen and (min-width: 453px) {
+  .navbar-header img {
+    width:100%;
+    max-width:350px;
+    height:auto;
+    margin-left: 35px;
+  }
+}
+
+@media only screen and (max-width: 452px) {
+  .navbar-header img {
+    width:150px;
+    margin-top:15px;
+  }
+}
