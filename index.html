@@ -4,84 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marcus Kittelson Resume</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            background-color: #f5f8fd;
-            color: #333;
-        }
-
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-
-        a {
-            color: #2980b9;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 40px 60px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        hr {
-            border-color: #ecf0f1;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 40px;
-        }
-
-    </style>
+    <title>Marcus Kittelson</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
-
-<div class="container">
-
-    <h1 class="mb-4">Marcus Kittelson</h1>
-    <p class="lead">UCalgary software engineering student skilled in data science. With M2M Tech expertise and innovation, I blend creativity with tech solutions.</p>
-    <hr>
-
-    <section class="mb-5">
-        <h2>EDUCATION</h2>
-        <!-- ... Repeat for all sections, similar to the below pattern ... -->
-    </section>
-
-    <section class="mb-5">
-        <h2>SKILLS</h2>
-        <ul>
-            <!-- ... Include all skills here ... -->
-        </ul>
-    </section>
-    
-    <hr>
-    <footer>
-        <p>LinkedIn: <a href="https://linkedin.com/in/marcus-kittelson" target="_blank">linkedin.com/in/marcus-kittelson</a></p>
-    </footer>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.min.js"></script>
+<body class="bg-gray-900 text-white h-screen flex items-center justify-center">
+    <div class="transform transition-transform duration-1000 ease-in-out hover:-translate-y-1 hover:scale-105">
+        <h1 data-aos="fade-zoom-in" data-aos-easing="ease-in-back" data-aos-duration="900" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight text-purple-400">
+            Marcus Kittelson
+        </h1>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
 </body>
 
 </html>
