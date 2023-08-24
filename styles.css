@@ -1,6 +1,44 @@
-h1 {
-    text-shadow: 0 0 10px #a066ff, 
-                 0 0 20px #a066ff, 
-                 0 0 30px #a066ff, 
-                 0 0 40px #a066ff; 
+/* Typography Glow Effect */
+.main-title {
+    text-shadow: 0 0 5px #a066ff, 
+                 0 0 15px #a066ff, 
+                 0 0 25px #a066ff, 
+                 0 0 35px #a066ff,
+                 0 0 45px #a066ff; 
+}
+
+header {
+    height: 200px;  /* Adjust the height to your preference */
+    overflow: hidden;  /* To hide the circle when it's out of the header's boundary */
+}
+
+/* Header Fade-in Animation */
+#main-header .header-container {
+    opacity: 0;
+    transform: translateY(-50px);
+    animation: fadeInUp 1.5s forwards 0.5s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Project Card Enhancements */
+.project-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.project-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 768px) {  /* Assuming you're using the standard TailwindCSS breakpoints */
+    .project-card {
+        max-width: 80%;  /* Adjust this value to your preference */
+        margin: 0 auto;
+    }
 }
