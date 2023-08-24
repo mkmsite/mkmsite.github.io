@@ -11,16 +11,19 @@
 </head>
 
 <body class="bg-gray-900 text-white">
-
-      <header class="w-full text-center bg-gray-900 transition-all duration-300 relative pt-10 pb-20" id="main-header">
+    <header class="w-full text-center transition-all duration-300 relative pt-10 pb-20 z-0" id="main-header">
         <div class="header-container">
-            <h1 class="main-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight text-purple-400">
-                Marcus Kittelson
+            <h1 class="main-title text-8xl sm:text-9xl md:text-9xl lg:text-10xl font-extrabold tracking-tighter text-white transform hover:scale-105 transition-transform duration-500">
+                Marcus
+                <br>
+                Kittelson
             </h1>
         </div>
     </header>
-
-
+    
+    
+    
+    
     <!-- Projects Title -->
     <section class="w-full text-center mt-12 mb-8">
         <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-400" data-aos="fade-in" data-aos-duration="800">PROJECTS</h2>
@@ -32,7 +35,10 @@
       <!-- Project: Q-Learning Taxi Driver Simulator -->
       <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md" data-aos="fade-up" data-aos-duration="1000">
         <!-- Image Placeholder (I'll use the same gradient, but you might replace it with an appropriate image or a graphic that represents this project) -->
-        <div class="bg-gradient-to-r from-purple-400 via-blue-500 to-purple-600 h-64 rounded-lg"></div>
+        <video class="h-64 w-full rounded-lg" autoplay muted loop>
+            <source src="taxi-ai.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
         <!-- Project Details -->
         <div>
             <h2 class="text-xl font-bold text-purple-400 mb-4">Q-Learning Taxi Driver Simulator</h2>
@@ -57,13 +63,19 @@
               </ul>
           </div>
           <!-- Image Placeholder -->
-            <div class="bg-gradient-to-r from-purple-400 via-blue-500 to-purple-600 h-64 rounded-lg"></div>
+          <!-- Image Placeholder -->
+          <div class="h-64 w-full overflow-hidden rounded-lg">
+            <img src="test-v3.jpg" alt="note" class="h-full w-full object-cover">
+        </div>
+
         </div>
 
         <!-- Project: Pokémon Type Classifier -->
         <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md" data-aos="fade-up" data-aos-duration="1000">
           <!-- Image Placeholder (Again, I'm using a gradient, but you might replace it with a relevant Pokémon image or graphic) -->
-          <div class="bg-gradient-to-r from-purple-400 via-blue-500 to-purple-600 h-64 rounded-lg"></div>
+          <div class="h-64 w-full overflow-hidden rounded-lg">
+                <img src="pokemon-classifier.jpg" alt="Pokemon Classifier Statistics" class="h-full w-full object-cover">
+            </div>
           <!-- Project Details -->
           <div>
             <h2 class="text-xl font-bold text-purple-400 mb-4">Pokémon Type Classifier</h2>
@@ -88,11 +100,13 @@
                 </ul>
             </div>
             <!-- Image Placeholder -->
-            <div class="bg-gradient-to-r from-purple-400 via-blue-500 to-purple-600 h-64 rounded-lg"></div>
+            <div class="h-64 w-full overflow-hidden rounded-lg">
+                <img src="obituary.png" alt="Website Collage" class="h-full w-full object-cover">
+            </div>
         </div>
 
         <!-- Project 3: Maglev Smart Sonar System -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md" data-aos="fade-up" data-aos-duration="1000">
+        <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md" data-aos="fade-up" data-aos-duration="1000">
             <!-- Image -->
             <div class="h-64 w-full overflow-hidden rounded-lg">
                 <img src="sonarsystem.jpg" alt="Maglev Smart Sonar System" class="h-full w-full object-cover">
@@ -113,35 +127,21 @@
 
     <script>
         AOS.init();
-
-        const title = document.querySelector("h1");
-        
-        window.addEventListener("scroll", () => {
-            const scale = Math.max(0.6, 1 - window.scrollY / 1000);
-            title.style.transform = `scale(${scale})`;
+    
+        // Initialize the original size of the title font
+        const originalSize = 8; // This should be equal to your largest title size in "rem"
+        const titleElement = document.querySelector('.main-title');
+    
+        window.addEventListener('scroll', () => {
+            // Get the scrolled percentage
+            const scrolled = document.documentElement.scrollTop / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+    
+            // Calculate the size based on the scrolled percentage
+            const size = Math.max(originalSize - (originalSize * scrolled), 5); // It won't get smaller than 5rem
+    
+            titleElement.style.fontSize = `${size}rem`;
         });
-
-        const circle = document.querySelector('.moving-circle');
-        let leftValue = 0;
-        let movingRight = true;
-
-        function moveCircle() {
-            if (movingRight) {
-                leftValue += 2;
-                if (leftValue > window.innerWidth - 50) {
-                    movingRight = false;
-                }
-            } else {
-                leftValue -= 2;
-                if (leftValue <= 0) {
-                    movingRight = true;
-                }
-            }
-            circle.style.left = leftValue + 'px';
-            requestAnimationFrame(moveCircle);
-        }
-
-        moveCircle();
     </script>
+    
 </body>
 </html>
