@@ -125,20 +125,24 @@
 
     <script>
         AOS.init();
-    
+
         // Initialize the original size of the title font
         const originalSize = 8; // This should be equal to your largest title size in "rem"
         const titleElement = document.querySelector('.main-title');
-    
+
         window.addEventListener('scroll', () => {
+            // Constrain the values of scrollTop
+            const scrollTop = Math.max(0, Math.min(document.documentElement.scrollTop, document.documentElement.scrollHeight - document.documentElement.clientHeight));
+            
             // Get the scrolled percentage
-            const scrolled = document.documentElement.scrollTop / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
-    
+            const scrolled = scrollTop / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+            
             // Calculate the size based on the scrolled percentage
             const size = Math.max(originalSize - (originalSize * scrolled), 5); // It won't get smaller than 5rem
-    
+
             titleElement.style.fontSize = `${size}rem`;
         });
+
     </script>
     
 </body>
