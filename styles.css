@@ -62,12 +62,6 @@ section.w-full.text-center.mt-12.mb-8 {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-@media (min-width: 768px) {
-    .project-card {
-        max-width: 80%;
-        margin: 0 auto;
-    }
-}
 
 .video-wrapper {
     clip-path: border-box;
