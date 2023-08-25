@@ -70,3 +70,23 @@ section.w-full.text-center.mt-12.mb-8 {
     width: 100%;
     height: 100%;
 }
+
+/* Additional styles already present in your code above */
+
+.arrow-container {
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+

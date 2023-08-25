@@ -24,7 +24,7 @@
     
     <!-- About Me Section -->
     <section class="w-full text-center mt-12 mb-8">
-        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white-400 mb-10 transition-colors duration-300" data-aos="fade-in" data-aos-duration="800">ABOUT ME</h2>
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-purple-400 mb-10 transition-colors duration-300" data-aos="fade-in" data-aos-duration="800">ABOUT ME</h2>
         <div class="container mx-auto px-4 mt-20 mb-40 space-y-16 max-w-3xl">
             <p class="text-lg sm:text-xl leading-relaxed" data-aos="fade-up" data-aos-duration="1000">
                 I'm Marcus Kittelson, a software engineering student at the University of Calgary, specializing in data science. Passionate about blending creativity with technical solutions, I've worked as a Data Scientist Intern at M2M Tech, sharpening my skills in Data Analysis, Visualization, and Machine Learning. I'm always eager to embrace the next tech challenge.
@@ -32,7 +32,7 @@
         </div>
     </section>
 
-    
+
     
     <!-- Skills and Courses Section -->
 <section class="container mx-auto px-4 mt-20 mb-40 space-y-16 max-w-5xl">
@@ -171,21 +171,31 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
 
     <script>
-    AOS.init();
+AOS.init();
 
-    const titleElement = document.querySelector('.main-title');
+const titleElement = document.querySelector('.main-title');
+const arrowElement = document.querySelector('.arrow-container');
+const skillsSection = document.querySelector('.container.mx-auto.px-4.mt-20.mb-40.space-y-16.max-w-5xl'); // This selector targets the "Skills and Courses" section
 
-    window.addEventListener('scroll', () => {
-        const windowHeight = window.innerHeight;
-        const scrolled = window.scrollY;
-        
-        // Adjust the fade point (400 here) based on your preference for when you want the title to be fully transparent
-        let opacity = 1 - scrolled / 250;
-        if(opacity < 0) opacity = 0;
+window.addEventListener('scroll', () => {
+    const windowHeight = window.innerHeight;
+    const scrolled = window.scrollY;
 
-        titleElement.style.opacity = opacity;
-    });
+    // Adjust the fade point (400 here) based on your preference for when you want the title to be fully transparent
+    let opacity = 1 - scrolled / 250;
+    if (opacity < 0) opacity = 0;
 
+    titleElement.style.opacity = opacity;
+
+    // Check if "Skills and Courses" section has come into view
+    const sectionTop = skillsSection.getBoundingClientRect().top;
+    if (sectionTop <= windowHeight * 0.9) { // The "0.9" means the section's top is 90% up the viewport
+        arrowElement.style.opacity = '0';
+        arrowElement.style.transition = 'opacity 0.5s ease'; // smooth transition for fading out
+    } else {
+        arrowElement.style.opacity = '1';
+    }
+});
 
     </script>
     
