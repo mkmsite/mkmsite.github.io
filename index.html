@@ -1,219 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marcus Kittelson</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marcus Kittelson</title>
+  <meta name="description" content="Selected work experience." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { color-scheme: dark; }
+    html { scroll-behavior: smooth; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial; }
+
+    /* FULL-SITE SPACE BACKGROUND */
+    #galaxy { position: fixed; inset: 0; z-index: -2; width: 100vw; height: 100vh; display:block; background:#08090b; }
+
+    /* Optional focus ring (super light). Delete if you want zero mouse UI. */
+    .cursor-ring { position: fixed; top:0; left:0; width:28px; height:28px; pointer-events:none; border-radius:999px; border:1px solid rgba(255,255,255,0.25); transform:translate(-50%,-50%); transition: width .2s, height .2s; z-index:50; mix-blend-mode:difference; }
+    @media (max-width: 640px) { .cursor-ring { display:none; } }
+
+    /* UI */
+    .glass { backdrop-filter: blur(12px); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.08); }
+    .u { background: linear-gradient(currentColor, currentColor) 0 100%/0 2px no-repeat; transition: background-size .3s; }
+    .u:hover { background-size: 100% 2px; }
+
+    /* Reveal + progress */
+    .reveal { opacity:0; transform: translateY(12px); }
+    .reveal.visible { opacity:1; transform: translateY(0); transition: opacity .5s ease, transform .5s ease; }
+    .progress { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,#22d3ee,#a78bfa,#34d399); z-index:60; }
+
+    /* Language meters */
+    .bar { display:flex; align-items:center; gap:12px; }
+    .bar .label { width:220px; font-weight:700; color:#fafafa; letter-spacing:.2px; }
+    .bar .meter { position:relative; height:14px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden; flex:1; }
+    .bar .meter::after { content:""; position:absolute; inset:0; width:var(--val,0%); background:linear-gradient(90deg,#60a5fa,#a78bfa,#34d399); transition:width .9s ease; }
+
+    /* Mobile-robust title sizing */
+    .hero-title { font-weight: 900; line-height: .95; letter-spacing:-.02em; font-size: clamp(2.6rem, 10vw, 6rem); }
+  </style>
 </head>
+<body class="bg-neutral-950 text-neutral-200 antialiased">
+  <!-- FULLSCREEN BACKGROUND CANVAS -->
+  <canvas id="galaxy" aria-hidden="true"></canvas>
+  <div class="cursor-ring" id="cursor" aria-hidden="true"></div>
+  <div class="progress" id="pg"></div>
 
-<body class="bg-black-900 text-white font-sans">
-    <header class="w-full text-center transition-all duration-300 relative pt-10 pb-20 z-0" id="main-header">
-        <div class="header-container flex justify-center items-end relative inline-block">
-        
-            <h1 class="main-title text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter text-white transform hover:scale-105 transition-transform duration-500 mt-8">
-                Marcus
-                <br>
-                Kittelson
-            </h1>            
-        </div>
+  <!-- shell -->
+  <div class="mx-auto max-w-5xl px-5 sm:px-6 py-10 sm:py-14">
+    <header class="flex items-center justify-between">
+      <a href="#top" class="text-sm sm:text-base tracking-widest text-neutral-400 u">MK</a>
+      <nav class="hidden sm:flex items-center gap-5 text-base">
+        <a href="#work" class="u text-neutral-300">Work</a>
+        <a href="#skills" class="u text-neutral-300">Languages</a>
+        <a href="#contact" class="u text-neutral-300">Connect</a>
+      </nav>
     </header>
-    
-    <!-- About Me Section -->
-    <section class="w-full text-center mt-12 mb-8">
-        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-purple-400 mb-10 transition-colors duration-300" data-aos="fade-in" data-aos-duration="800">ABOUT ME</h2>
-        <div class="container mx-auto px-4 mt-20 mb-40 space-y-16 max-w-3xl">
-            <p class="text-lg sm:text-xl leading-relaxed" data-aos="fade-up" data-aos-duration="1000">
-                I'm Marcus Kittelson, a Software Engineering student at the University of Calgary with a specialized focus on data science. Combining creativity with robust tech solutions, my tenure at M2M Tech as a Data Scientist Intern has enriched my proficiency in data analytics, visualization, and machine learning. Always on the lookout for the next technological challenge.
-            </p>
-        </div>
+
+    <!-- hero -->
+    <section id="top" class="mt-16 sm:mt-24">
+      <h1 class="hero-title text-white">Marcus&nbsp;Kittelson</h1>
+      <p class="mt-5 text-xl sm:text-2xl text-neutral-300 max-w-3xl reveal">
+        Software Engineering @ UCalgary. Building data tools, ML-adjacent systems, and high-signal automation. Site is intentionally minimal—just work.
+      </p>
+      <div class="mt-9 flex flex-wrap items-center gap-4">
+        <a id="linkedin" href="https://www.linkedin.com/in/marcus-kittelson/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-base font-semibold text-white glass transition-transform will-change-transform">
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5"><path fill="currentColor" d="M4.98 3.5A2.5 2.5 0 1 1 5 8.5a2.5 2.5 0 0 1-.02-5zM3 9h4v12H3zM9 9h3.7v1.7h.05c.52-.98 1.8-2.02 3.7-2.02 3.96 0 4.7 2.6 4.7 5.98V21H18v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H10V9z"/></svg>
+          Connect on LinkedIn
+        </a>
+        <a href="#work" class="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-base font-semibold text-neutral-100/90 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 transition-colors">
+          View work ↓
+        </a>
+      </div>
     </section>
 
-
-    
-    <!-- Skills and Courses Section -->
-<section class="container mx-auto px-4 mt-20 mb-40 space-y-16 max-w-5xl">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <!-- Technical Skills -->
-        <div class="bg-gray-800 p-6 rounded-lg" data-aos="fade-right" data-aos-duration="1000">
-            <h2 class="text-xl font-bold text-purple-400 mb-4">Technical Skills</h2>
-            <ul class="list-disc list-inside space-y-2 pl-5">
-            <li>Proficient in Python, JavaScript, Java, C/C++</li>
-            <li>Strong grasp of AWS services: DynamoDB, Lambda, and Polly</li>
-            <li>Advanced knowledge in Data Visualization and Data Analysis</li>
-            <li>Infrastructure orchestration with Terraform</li>
-            <li>RISC-V Assembly and Systems Programming</li>
-            <li>Development on Raspberry Pi and IoT devices</li>
-            <li>Database Management: SQL and NoSQL databases</li>
-                <!-- Add more skills as needed -->
+    <!-- work -->
+    <main id="work" class="mt-16 sm:mt-24">
+      <h2 class="text-2xl sm:text-3xl font-semibold text-white">Selected Work</h2>
+      <div class="mt-7 grid grid-cols-1 gap-6">
+        <article class="tilt group rounded-2xl glass p-6 reveal">
+          <div class="tilt-inner">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold text-white">NuVista Energy</h3>
+                <p class="text-base text-neutral-300">Development & Planning Engineering Intern · May 2024 – Present</p>
+              </div>
+              <span class="text-[10px] uppercase tracking-widest text-emerald-300/90">Engineering</span>
+            </div>
+            <ul class="mt-4 text-base text-neutral-200 space-y-2 list-disc pl-5">
+              <li>Python → Spotfire automations: reduced well-planning from ~64h → ~2h.</li>
+              <li>Hydraulic fracturing design & sequencing on $10M+ programs.</li>
+              <li>SQL/Spotfire ops dashboards over 1.7M+ datapoints/day.</li>
             </ul>
-        </div>
+          </div>
+        </article>
 
-        <!-- Relevant Course Topics -->
-        <div class="bg-gray-800 p-6 rounded-lg" data-aos="fade-left" data-aos-duration="1000">
-            <h2 class="text-xl font-bold text-purple-400 mb-4">Relevant Course Topics</h2>
-            <ul class="list-disc list-inside space-y-2 pl-5">
-                <li>Data Structures & Algorithms</li>
-                <li>Full Stack Web Development</li>
-                <li>Digital Circuits & Computer Organization</li>
-                <li>Caclculus I, II & III</li>
-                <li>Discrete Mathematics</li>
-                <li>ML/AI: Supervised, Unsupervised and Reinforcment Learning</li>
-                <li>Neural Networks</li>
-                <li>Probability, Statistics and ML</li>
-                <!-- Add more course topics as needed -->
+        <article class="tilt group rounded-2xl glass p-6 reveal">
+          <div class="tilt-inner">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold text-white">Tardigrade Ltd. — Capstone</h3>
+                <p class="text-base text-neutral-300">Database & Algorithmic Trading Systems · Sept 2025 – Present</p>
+              </div>
+              <span class="text-[10px] uppercase tracking-widest text-violet-300/90">Capstone</span>
+            </div>
+            <ul class="mt-4 text-base text-neutral-200 space-y-2 list-disc pl-5">
+              <li>PostgreSQL pipeline processing 100M+ datapoints/month.</li>
+              <li>Python-based ML error/anomaly detection → 70% query-time reduction.</li>
             </ul>
-        </div>
-    </div>
-</section>
+          </div>
+        </article>
 
-    
-    <!-- Projects Title -->
-    <section class="w-full text-center mt-12 mb-8">
-        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-400" data-aos="fade-in" data-aos-duration="800">PROJECTS</h2>
-    </section>
+        <article class="tilt group rounded-2xl glass p-6 reveal">
+          <div class="tilt-inner">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold text-white">M2M Tech</h3>
+                <p class="text-base text-neutral-300">Machine Learning & Data Science Intern · May 2023 – Aug 2023</p>
+              </div>
+              <span class="text-[10px] uppercase tracking-widest text-sky-300/90">ML</span>
+            </div>
+            <p class="mt-4 text-base text-neutral-200">Applied ML for predictive analytics & automation (government-sponsored internship).</p>
+          </div>
+        </article>
 
-    <!-- Projects Section -->
-    <section class="container mx-auto px-4 mt-20 mb-40 space-y-16">
+        <article class="tilt group rounded-2xl glass p-6 reveal">
+          <div class="tilt-inner">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold text-white">HBO — The Last of Us</h3>
+                <p class="text-base text-neutral-300">On-Set Safety & Network Ops Assistant · Jul 2021 – Jun 2022</p>
+              </div>
+              <span class="text-[10px] uppercase tracking-widest text-fuchsia-300/90">Operations</span>
+            </div>
+            <p class="mt-4 text-base text-neutral-200">Led a 15-person safety crew; maintained on-set network systems during 80+ hr production weeks.</p>
+          </div>
+        </article>
+      </div>
+    </main>
 
-      <!-- Project: Q-Learning Taxi Driver Simulator -->
-      <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md mx-auto w-full md:max-w-screen-lg" data-aos="fade-up" data-aos-duration="1000">
-        <!-- Image Placeholder (I'll use the same gradient, but you might replace it with an appropriate image or a graphic that represents this project) -->
-        <video class="h-64 w-full rounded-lg" autoplay muted loop>
-            <source src="taxi-ai.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <!-- Project Details -->
-        <div>
-            <h2 class="text-xl font-bold text-purple-400 mb-4">Q-Learning Taxi Driver Simulator</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li>Developed a reinforcement learning-based taxi AI simulator using OpenAI's Taxi-v3 environment. The agent operates in a 5x5 grid world, mastering efficient pick-up and drop-offs.</li>
-                <li>The sophisticated simulator incorporates 500 distinct states, determining optimal actions based on the taxi's position, passenger's location, and target destination. Supported by robust Q-learning techniques, the AI undergoes training over 1,000 episodes, illustrating reinforcement learning's capability in diverse scenarios.</li>
-                <li>Delve deeper and experience the AI's prowess: <a href="https://github.com/MarcusKittelson/Q-Learning-Taxi-Driver-Simulation--Reinforcement-Learning-" class="text-purple-400 hover:underline">here</a>.</li>
-            </ul>
+    <!-- languages -->
+    <section id="skills" class="mt-16 sm:mt-24">
+      <h2 class="text-2xl sm:text-3xl font-semibold text-white">Languages</h2>
+      <div class="mt-6 glass rounded-2xl p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div class="bar"><div class="label">Python</div><div class="meter" style="--val:92%"></div></div>
+          <div class="bar"><div class="label">TypeScript / JavaScript</div><div class="meter" style="--val:86%"></div></div>
+          <div class="bar"><div class="label">Java</div><div class="meter" style="--val:80%"></div></div>
+          <div class="bar"><div class="label">SQL / PostgreSQL</div><div class="meter" style="--val:82%"></div></div>
+          <div class="bar"><div class="label">C / C++</div><div class="meter" style="--val:76%"></div></div>
+          <div class="bar"><div class="label">RISC-V Assembly</div><div class="meter" style="--val:68%"></div></div>
         </div>
       </div>
-
-        <!-- Project 1: Cloud-Based React Note-Taking Application -->
-        <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md mx-auto w-full md:max-w-screen-lg" data-aos="fade-up" data-aos-duration="1000">
-            <!-- Project Details -->
-            <div>
-              <h2 class="text-xl font-bold text-purple-400 mb-4">Cloud-Based React Note-Taking Application</h2>
-              <ul class="list-disc list-inside space-y-2">
-                  <li>Crafted a dynamic, cloud-based note-taking solution with React, AWS DynamoDB integration, and personalized storage via secure Google OAuth cross-device access.</li>
-                  <li>Streamlined infrastructure orchestration using Terraform and serverless Lambda functions in Python. Expertly hand-coded JS, CSS and HTML for optimal performance.</li>
-                  <li>Application deployed and accessible <a href="https://astonishing-mermaid-aa6898.netlify.app/" class="text-purple-400 hover:underline">here</a>.</li>
-              </ul>
-          </div>
-          <!-- Image Placeholder -->
-          <!-- Image Placeholder -->
-          <div class="h-64 w-full overflow-hidden rounded-lg">
-            <img src="test-v3.jpg" alt="note" class="h-full w-full object-contain">
-        </div>
-
-        </div>
-
-        <!-- Project: Pokémon Type Classifier -->
-        <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md mx-auto w-full md:max-w-screen-lg" data-aos="fade-up" data-aos-duration="1000">
-          <!-- Image Placeholder (Again, I'm using a gradient, but you might replace it with a relevant Pokémon image or graphic) -->
-          <div class="h-64 w-full overflow-hidden rounded-lg">
-                <img src="pokemon-classifier.jpg" alt="Pokemon Classifier Statistics" class="h-full w-full object-contain">
-            </div>
-          <!-- Project Details -->
-          <div>
-            <h2 class="text-xl font-bold text-purple-400 mb-4">Pokémon Type Classifier</h2>
-              <ul class="list-disc list-inside space-y-2">
-                  <li>Crafted a machine learning model to predict Pokémon types based on comprehensive attributes using logistic regression.</li>
-                  <li>Processed a rich dataset detailing Pokémon traits, ensuring efficient model training through data standardization and effective preprocessing techniques.</li>
-                  <li>Implemented a well-structured pipeline for seamless classification. Rigorous evaluation with confusion matrices and performance metrics underscores the model's accuracy and potential enhancement areas.</li>
-                  <li>Dive into the fusion of Pokémon analytics and machine learning <a href="https://github.com/MarcusKittelson/ML-Pokemon-Classification" class="text-purple-400 hover:underline">here</a>.</li>
-              </ul>
-          </div>
-        </div>
-
-        
-        <!-- Project 2: EternalEcho: AI-Powered Obituary Generator -->
-        <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md mx-auto w-full md:max-w-screen-lg" data-aos="fade-up" data-aos-duration="1000">
-            <div>
-                <h2 class="text-xl font-bold text-purple-400 mb-4">EternalEcho: AI-Powered Obituary Generator</h2>
-                <ul class="list-disc list-inside space-y-2">
-                    <li>Developed an innovative web app using ChatGPT API for personalized obituaries. Amazon polly for audio conversion, Cloudinary API for media management, and Python based Lambda functions for serverless backend processing.</li>
-                    <li>Leveraged React for UI, AWS DynamoDB for data storage, and applied modern web technologies (JS, CSS, HTML) to create a responsive and seamless user experience.</li>
-                </ul>
-            </div>
-            <!-- Image Placeholder -->
-            <div class="h-64 w-full overflow-hidden rounded-lg">
-                <img src="obituary.png" alt="Website Collage" class="h-full w-full object-contain">
-            </div>
-        </div>
-
-        <!-- Project 3: Maglev Smart Sonar System -->
-        <div class="project-card grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-800 p-8 rounded-lg shadow-md mx-auto w-full md:max-w-screen-lg" data-aos="fade-up" data-aos-duration="1000">
-            <!-- Image -->
-            <div class="h-64 w-full overflow-hidden rounded-lg">
-                <img src="sonarsystem.jpg" alt="Maglev Smart Sonar System" class="h-full w-full object-contain">
-            </div>
-            <!-- Project Details -->
-            <div>
-                <h2 class="text-xl font-bold text-purple-400 mb-4">Maglev Smart Sonar System</h2>
-                <ul class="list-disc list-inside space-y-2">
-                    <li>Earned the "Best Use of Hardware" accolade at CalgaryHacks 2022 by developing a system designed to minimize energy consumption of maglev trains. The system dynamically calculates optimal hover distances in real-time using a sonar sensor interfaced with a Raspberry Pi.</li>
-                    <li>Project details available <a href="https://devpost.com/software/maglev-smart-sonar-system" class="text-purple-400 hover:underline">here</a>.</li>
-                </ul>
-            </div>
-        </div>
     </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <!-- connect -->
+    <section id="contact" class="mt-16 sm:mt-24">
+      <h2 class="sr-only">Connect</h2>
+      <div class="flex items-center gap-4">
+        <a id="lk2" href="https://www.linkedin.com/in/marcus-kittelson/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-base font-semibold text-white glass transition-transform will-change-transform">
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5"><path fill="currentColor" d="M4.98 3.5A2.5 2.5 0 1 1 5 8.5a2.5 2.5 0 0 1-.02-5zM3 9h4v12H3zM9 9h3.7v1.7h.05c.52-.98 1.8-2.02 3.7-2.02 3.96 0 4.7 2.6 4.7 5.98V21H18v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H10V9z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </section>
 
-    <script>
-AOS.init();
-
-const titleElement = document.querySelector('.main-title');
-const arrowElement = document.querySelector('.arrow-container');
-const skillsSection = document.querySelector('.container.mx-auto.px-4.mt-20.mb-40.space-y-16.max-w-5xl'); // This selector targets the "Skills and Courses" section
-
-window.addEventListener('scroll', () => {
-    const windowHeight = window.innerHeight;
-    const scrolled = window.scrollY;
-
-    // Adjust the fade point (400 here) based on your preference for when you want the title to be fully transparent
-    let opacity = 1 - scrolled / 250;
-    if (opacity < 0) opacity = 0;
-
-    titleElement.style.opacity = opacity;
-
-    // Check if "Skills and Courses" section has come into view
-    const sectionTop = skillsSection.getBoundingClientRect().top;
-    if (sectionTop <= windowHeight * 0.9) { // The "0.9" means the section's top is 90% up the viewport
-        arrowElement.style.opacity = '0';
-        arrowElement.style.transition = 'opacity 0.5s ease'; // smooth transition for fading out
-    } else {
-        arrowElement.style.opacity = '1';
-    }
-});
-
-    </script>
-     <div class="text-center mt-10">
-        <button id="valentine-btn" class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-all duration-300">
-            New Project Entry Point
-        </button>
+    <div class="mt-10 text-xs text-neutral-400 bg-neutral-900/60 border border-neutral-800 rounded-xl p-3">
+      This site was originally built for a drone consulting business and has been repurposed as a personal CV site. Fully built in HTML & CSS using mathematical equations for the visuals—no React or rendered UI frameworks.
     </div>
-    <script>
-        document.getElementById('valentine-btn').addEventListener('click', function () {
-            const password = prompt('Enter the passcode to access the new page:');
-            const correctPassword = 'autumn'; // Replace with your secure password
 
-            if (password === correctPassword) {
-                window.location.href = 'valentine.html';
-            } else {
-                alert('Incorrect password! Please try again.');
-            }
+    <footer class="mt-6 sm:mt-10 border-t border-neutral-900 pt-6 text-sm text-neutral-400">
+      <p>© <span id="y"></span> Marcus Kittelson</p>
+    </footer>
+  </div>
+
+  <script>
+    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isTouch = matchMedia('(pointer: coarse)').matches;
+
+    // year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // optional tiny cursor ring (no trail)
+    const cursor = document.getElementById('cursor');
+    if (!isTouch) {
+      window.addEventListener('mousemove', (e) => {
+        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      });
+      document.querySelectorAll('a, button, .tilt').forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.style.width = '56px'; cursor.style.height = '56px'; });
+        el.addEventListener('mouseleave', () => { cursor.style.width = '28px'; cursor.style.height = '28px'; });
+      });
+    } else { cursor.remove(); }
+
+    // card tilt
+    document.querySelectorAll('.tilt').forEach(card => {
+      if (isTouch) return;
+      const inner = card.querySelector('.tilt-inner');
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        inner.style.transform = `rotateX(${(-py * 8).toFixed(2)}deg) rotateY(${(px * 10).toFixed(2)}deg)`;
+      });
+      card.addEventListener('mouseleave', () => { inner.style.transform = 'rotateX(0) rotateY(0)'; });
+    });
+
+    // reveal
+    const io = new IntersectionObserver((entries)=>{ entries.forEach(entry=>{ if(entry.isIntersecting){ entry.target.classList.add('visible'); io.unobserve(entry.target); } }); }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+
+    // progress
+    const prog = document.getElementById('pg');
+    const onScroll = () => { const sc = window.scrollY; const h = document.documentElement.scrollHeight - innerHeight; const w = Math.max(0, Math.min(1, sc / h)); prog.style.width = (w*100) + '%'; };
+    addEventListener('scroll', onScroll); onScroll();
+
+    // === FULLSCREEN SPACE (math only): spiral galaxy + async twinkle + fast meteors ===
+    (function(){
+      const c = document.getElementById('galaxy'); if(!c) return; const ctx = c.getContext('2d');
+      let dpr = Math.min(2, devicePixelRatio||1);
+      function rs(){ c.width = innerWidth * dpr; c.height = innerHeight * dpr; }
+      rs(); addEventListener('resize', rs);
+
+      const STAR_COUNT = isTouch ? 900 : 2000;
+      const ARM_COUNT = 4;
+      const ROT_SPEED  = 0.00007; // slow swirl
+
+      const rand = (a=0,b=1)=> a + Math.random()*(b-a);
+      const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
+
+      // Spiral stars
+      const armStars = [];
+      for (let i = 0; i < Math.floor(STAR_COUNT * 0.5); i++) {
+        const arm = i % ARM_COUNT;
+        const dist  = Math.pow(Math.random(), 0.7);
+        const angle = (arm / ARM_COUNT) * Math.PI * 2 + dist * 5.6 + (Math.random()*0.66-0.33);
+        const radius = dist * 0.62;
+        armStars.push({
+          theta: angle, dist: radius,
+          r: 0.5 + Math.random() * 1.4,
+          baseA: 0.35 + Math.random() * 0.60,
+          hue: 200 + (Math.random() * 110 - 20),
+          twf: 0.0004 + Math.random() * 0.0024,
+          phase: Math.random() * Math.PI * 2
         });
-    </script>
+      }
+
+      // Background scatter
+      const bgStars = [];
+      for (let i = 0; i < Math.floor(STAR_COUNT * 0.5); i++) {
+        const rr = Math.pow(Math.random(), 0.55);
+        const ang = Math.random() * Math.PI * 2;
+        const rad = rr * 0.85;
+        bgStars.push({
+          x: Math.cos(ang) * rad,
+          y: Math.sin(ang) * rad,
+          r: 0.4 + Math.random() * 0.9,
+          baseA: 0.2 + Math.random() * 0.5,
+          hue: 210 + (Math.random() * 90 - 30),
+          twf: 0.0003 + Math.random() * 0.0022,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      // Meteors (fast, long trails; click to spawn)
+      const meteors = [];
+      function spawnMeteor(x, y, angle) {
+        const speed = (3.6 + Math.random() * 2.4) * dpr;
+        const life  = (700 + Math.random() * 500) * 1.5; // longer
+        meteors.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life, trail: [], maxTrail: 54 });
+      }
+      let mT = 0;
+      addEventListener('pointerdown', (e)=>{ spawnMeteor(e.clientX*dpr, e.clientY*dpr, rand(-Math.PI*0.9, -Math.PI*0.6)); });
+
+      let t0 = performance.now();
+      function draw(now){
+        const dt = now - t0; t0 = now;
+        const w = c.width, h = c.height; const s = Math.min(w,h);
+        ctx.clearRect(0,0,w,h);
+
+        // Galaxy (rotating)
+        ctx.save(); ctx.translate(w/2, h/2); ctx.rotate(now*ROT_SPEED);
+
+        // Core glow
+        const core = ctx.createRadialGradient(0,0,0, 0,0, s*0.24);
+        core.addColorStop(0,'rgba(255,255,255,0.08)'); core.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle = core; ctx.beginPath(); ctx.arc(0,0,s*0.24,0,Math.PI*2); ctx.fill();
+
+        // BG stars
+        for (const st of bgStars){
+          const x = st.x*s, y = st.y*s;
+          const tw = st.baseA * (0.6 + 0.4*Math.sin(now*st.twf + st.phase));
+          ctx.globalAlpha = clamp(tw,0,1);
+          ctx.fillStyle = `hsl(${st.hue}deg 70% 68%)`;
+          ctx.beginPath(); ctx.arc(x,y,st.r*dpr,0,Math.PI*2); ctx.fill();
+        }
+
+        // Arm stars
+        for (const st of armStars){
+          const d = st.dist*s; const x = Math.cos(st.theta)*d; const y = Math.sin(st.theta)*d;
+          const tw = st.baseA * (0.7 + 0.3*Math.sin(now*st.twf + st.phase));
+          ctx.globalAlpha = clamp(tw,0,1);
+          ctx.fillStyle = `hsl(${st.hue}deg 70% 72%)`;
+          ctx.beginPath(); ctx.arc(x,y,st.r*dpr,0,Math.PI*2); ctx.fill();
+        }
+
+        // Connections
+        ctx.globalAlpha = 0.05; ctx.strokeStyle = 'rgba(166,202,255,0.35)'; ctx.beginPath();
+        for(let i=0;i<armStars.length;i+=7){
+          const a=armStars[i], b=armStars[(i+11)%armStars.length];
+          const ax=Math.cos(a.theta)*a.dist*s, ay=Math.sin(a.theta)*a.dist*s;
+          const bx=Math.cos(b.theta)*b.dist*s, by=Math.sin(b.theta)*b.dist*s;
+          ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Meteors with long trails
+        ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        meteors.forEach(m => {
+          m.x += m.vx; m.y += m.vy; m.life -= dt;
+          m.trail.unshift({ x: m.x, y: m.y });
+          if (m.trail.length > m.maxTrail) m.trail.pop();
+
+          let a = 0.14;
+          for (let i = 0; i < m.trail.length - 1; i++) {
+            const p = m.trail[i], q = m.trail[i + 1];
+            const grad = ctx.createLinearGradient(p.x, p.y, q.x, q.y);
+            grad.addColorStop(0, `rgba(180,200,255,${a})`);
+            grad.addColorStop(1, `rgba(120,180,255,${a * 0.6})`);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = (4 - i * 0.08) * dpr;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+            a *= 0.9;
+          }
+          ctx.fillStyle = 'rgba(255,255,255,0.98)';
+          ctx.beginPath(); ctx.arc(m.x, m.y, 2.0 * dpr, 0, Math.PI * 2); ctx.fill();
+        });
+        for (let i = meteors.length - 1; i >= 0; i--) if (meteors[i].life <= 0) meteors.splice(i, 1);
+        ctx.restore();
+
+        // ambient meteors
+        mT += dt; if (mT > 2400 && meteors.length < 3) { mT = 0; spawnMeteor(rand(0,w*0.2), rand(h*0.2,h*0.8), rand(-Math.PI*0.9,-Math.PI*0.6)); }
+
+        requestAnimationFrame(draw);
+      }
+      if (!isReduced) requestAnimationFrame(draw);
+    })();
+  </script>
 </body>
 </html>
