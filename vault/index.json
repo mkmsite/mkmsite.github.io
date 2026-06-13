@@ -1,6 +1,11 @@
 {
   "documents": [
     {
+      "title": "Vault",
+      "file": "vault.skill",
+      "date": "2026-06-12"
+    },
+    {
       "title": "Welcome to the Vault",
       "file": "welcome.md",
       "date": "2026-06-12"
