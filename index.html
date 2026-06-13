@@ -7,8 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark-dimmed.min.css">
   <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.11.0/build/sha256.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11/highlight.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     [hidden] { display: none !important; }
@@ -32,7 +34,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── LOCK SCREEN ──────────────────────────────── */
+    /* ── LOCK SCREEN ── */
     #lock-screen {
       position: fixed;
       inset: 0;
@@ -135,7 +137,7 @@
       letter-spacing: 0.03em;
     }
 
-    /* ── VAULT LAYOUT ─────────────────────────────── */
+    /* ── VAULT LAYOUT ── */
     #vault {
       display: grid;
       grid-template-columns: 260px 1fr;
@@ -161,19 +163,8 @@
       flex-shrink: 0;
     }
 
-    .sidebar-logo {
-      font-size: 1.05rem;
-      font-weight: 600;
-      letter-spacing: -0.03em;
-      color: var(--accent);
-    }
-
-    .sidebar-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
+    .sidebar-logo { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.03em; color: var(--accent); }
+    .sidebar-label { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
 
     #doc-list {
       flex: 1;
@@ -192,10 +183,12 @@
     }
 
     .doc-item:hover { background: var(--surface); }
+    .doc-item.active { background: var(--accent-glow); border-left-color: var(--accent); }
 
-    .doc-item.active {
-      background: var(--accent-glow);
-      border-left-color: var(--accent);
+    .doc-item-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .doc-item-title {
@@ -205,16 +198,24 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      flex: 1;
       line-height: 1.4;
     }
 
     .doc-item.active .doc-item-title { color: var(--accent); }
 
-    .doc-item-date {
-      font-size: 0.7rem;
+    .file-badge {
+      font-size: 0.58rem;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
-      margin-top: 0.15rem;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 4px;
+      flex-shrink: 0;
+      text-transform: lowercase;
     }
+
+    .doc-item-date { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
 
     .sidebar-footer {
       padding: 0.9rem 1.25rem;
@@ -251,6 +252,10 @@
       margin-bottom: 2.25rem;
       padding-bottom: 1.5rem;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
     }
 
     #doc-title-el {
@@ -262,13 +267,28 @@
       margin-bottom: 0.4rem;
     }
 
-    #doc-date-el {
-      font-size: 0.78rem;
+    #doc-date-el { font-size: 0.78rem; color: var(--text-muted); }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       color: var(--text-muted);
+      font-size: 0.75rem;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+      margin-top: 0.35rem;
     }
 
+    .dl-btn:hover { color: var(--accent); border-color: var(--accent); }
+
     /* MARKDOWN */
-    #doc-body { max-width: 680px; line-height: 1.78; font-size: 0.925rem; }
+    #doc-body { max-width: 720px; line-height: 1.78; font-size: 0.925rem; }
 
     #doc-body h1 { font-size: 1.45rem; font-weight: 600; letter-spacing: -0.025em; color: #eceef1; margin: 2rem 0 0.9rem; }
     #doc-body h2 { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.015em; color: #dde0e5; margin: 1.75rem 0 0.7rem; }
@@ -303,15 +323,76 @@
       overflow-x: auto;
       margin: 1.25rem 0;
     }
-    #doc-body pre code {
-      background: none;
-      color: var(--text);
-      padding: 0;
-      font-size: 0.85rem;
-    }
+    #doc-body pre code { background: none; color: var(--text); padding: 0; font-size: 0.85rem; }
     #doc-body table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.875rem; }
     #doc-body th { text-align: left; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-dim); font-weight: 500; }
     #doc-body td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.035); }
+
+    /* CODE FILES (highlight.js) */
+    .code-wrap {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .code-wrap pre { margin: 0; border-radius: 0; border: none; }
+    .code-wrap .hljs { background: #0d0f12; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.845rem; line-height: 1.65; }
+
+    /* CSV / EXCEL TABLES */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.845rem; }
+    .table-wrap th { background: rgba(255,255,255,0.04); padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text-dim); font-weight: 500; text-align: left; white-space: nowrap; }
+    .table-wrap td { padding: 0.55rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .table-wrap tr:last-child td { border-bottom: none; }
+
+    /* IMAGES */
+    .img-wrap { max-width: 100%; }
+    .img-wrap img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); }
+
+    /* DOWNLOAD CARD (unknown file types) */
+    .dl-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 2rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      max-width: 380px;
+    }
+
+    .dl-card-ext {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      border: 1px solid rgba(167,139,250,0.3);
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+    }
+
+    .dl-card-name { font-size: 1rem; font-weight: 500; color: var(--text); word-break: break-all; }
+    .dl-card-desc { font-size: 0.8rem; color: var(--text-muted); }
+
+    .dl-card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(167,139,250,0.3);
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .dl-card-btn:hover { background: rgba(167,139,250,0.28); }
 
     /* STATES */
     .state-msg { color: var(--text-muted); font-size: 0.85rem; padding: 3rem 0; }
@@ -359,11 +440,14 @@
 
   <main id="content">
     <div id="doc-header" hidden>
-      <div id="doc-title-el"></div>
-      <div id="doc-date-el"></div>
+      <div>
+        <div id="doc-title-el"></div>
+        <div id="doc-date-el"></div>
+      </div>
+      <a id="dl-btn" class="dl-btn" target="_blank" rel="noopener">↓ download</a>
     </div>
     <div id="doc-body">
-      <div class="state-msg">Select a document from the sidebar.</div>
+      <div class="state-msg">Select a file from the sidebar.</div>
     </div>
   </main>
 </div>
@@ -372,6 +456,23 @@
 const HASH     = 'cb660be7cab286d50e71f262df332843f22047c8e09b42cf25106cf1de3c589b';
 const RAW_BASE = 'https://raw.githubusercontent.com/mkmsite/mkmsite.github.io/main';
 
+const CODE_EXTS  = new Set(['py','js','ts','tsx','jsx','json','sql','html','css','sh','bash','yaml','yml','toml','r','java','c','cpp','go','rs','xml','txt','env','ini','cfg','rb','php','swift','kt','scala','lua']);
+const IMAGE_EXTS = new Set(['png','jpg','jpeg','gif','svg','webp','bmp','ico']);
+const EXCEL_EXTS = new Set(['xlsx','xls']);
+
+const LANG_MAP = {
+  py:'python', js:'javascript', ts:'typescript', tsx:'typescript', jsx:'javascript',
+  json:'json', sql:'sql', html:'html', css:'css', sh:'bash', bash:'bash',
+  yaml:'yaml', yml:'yaml', toml:'toml', r:'r', java:'java', c:'c', cpp:'cpp',
+  go:'go', rs:'rust', xml:'xml', rb:'ruby', php:'php', swift:'swift', kt:'kotlin',
+  scala:'scala', lua:'lua', txt:'plaintext', env:'bash', ini:'ini', cfg:'ini',
+};
+
+function ext(fname) { return (fname.split('.').pop() || '').toLowerCase(); }
+
+function rawUrl(file) { return `${RAW_BASE}/vault/${file}`; }
+
+// ── AUTH ──────────────────────────────────────────
 function tryUnlock() {
   const pw = document.getElementById('pw-input').value.trim();
   if (!pw) return;
@@ -400,6 +501,7 @@ function lockVault() {
   setTimeout(() => document.getElementById('pw-input').focus(), 50);
 }
 
+// ── INDEX ─────────────────────────────────────────
 window._docs = [];
 
 async function loadIndex() {
@@ -412,45 +514,145 @@ async function loadIndex() {
     if (window._docs.length) openDoc(window._docs[0], document.querySelector('.doc-item'));
   } catch {
     document.getElementById('doc-list').innerHTML =
-      '<div class="state-msg" style="padding:1rem 1.25rem">No documents found.</div>';
+      '<div class="state-msg" style="padding:1rem 1.25rem">No files found.</div>';
   }
 }
 
 function renderList(docs) {
   const list = document.getElementById('doc-list');
   if (!docs.length) {
-    list.innerHTML = '<div class="state-msg" style="padding:1rem 1.25rem">No documents yet.</div>';
+    list.innerHTML = '<div class="state-msg" style="padding:1rem 1.25rem">No files yet.</div>';
     return;
   }
   list.innerHTML = docs.map((d, i) => `
     <div class="doc-item" onclick="openDoc(window._docs[${i}], this)">
-      <div class="doc-item-title">${esc(d.title)}</div>
+      <div class="doc-item-row">
+        <div class="doc-item-title">${esc(d.title)}</div>
+        <span class="file-badge">${esc(ext(d.file))}</span>
+      </div>
       <div class="doc-item-date">${esc(d.date || '')}</div>
     </div>
   `).join('');
 }
 
+// ── OPEN FILE ─────────────────────────────────────
 async function openDoc(doc, el) {
   document.querySelectorAll('.doc-item').forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
 
+  const body = document.getElementById('doc-body');
   const header = document.getElementById('doc-header');
-  const body   = document.getElementById('doc-body');
+  const url = rawUrl(doc.file);
 
   header.hidden = false;
   document.getElementById('doc-title-el').textContent = doc.title;
   document.getElementById('doc-date-el').textContent  = fmtDate(doc.date);
+
+  const dlBtn = document.getElementById('dl-btn');
+  dlBtn.href = url;
+  dlBtn.setAttribute('download', doc.file);
+
   body.innerHTML = '<div class="state-msg">Loading…</div>';
 
+  const e = ext(doc.file);
   try {
-    const r = await fetch(`${RAW_BASE}/vault/${doc.file}?t=${Date.now()}`);
-    if (!r.ok) throw new Error();
-    body.innerHTML = marked.parse(await r.text());
+    if (e === 'md') {
+      await renderMarkdown(url, body);
+    } else if (e === 'csv') {
+      await renderCSV(url, body);
+    } else if (EXCEL_EXTS.has(e)) {
+      await renderExcel(url, body);
+    } else if (IMAGE_EXTS.has(e)) {
+      renderImage(url, body);
+    } else if (CODE_EXTS.has(e)) {
+      await renderCode(url, e, body);
+    } else {
+      renderDownload(url, doc.file, body);
+    }
   } catch {
-    body.innerHTML = '<div class="state-msg">Could not load document.</div>';
+    body.innerHTML = '<div class="state-msg">Could not load file.</div>';
   }
 
   document.getElementById('content').scrollTo(0, 0);
+}
+
+// ── RENDERERS ─────────────────────────────────────
+async function renderMarkdown(url, body) {
+  const r = await fetch(`${url}?t=${Date.now()}`);
+  if (!r.ok) throw new Error();
+  body.innerHTML = marked.parse(await r.text());
+}
+
+async function renderCode(url, e, body) {
+  const r = await fetch(`${url}?t=${Date.now()}`);
+  if (!r.ok) throw new Error();
+  const code = await r.text();
+  const lang = LANG_MAP[e] || 'plaintext';
+  let highlighted;
+  try { highlighted = hljs.highlight(code, { language: lang }).value; }
+  catch { highlighted = esc(code); }
+  body.innerHTML = `<div class="code-wrap"><pre><code class="hljs">${highlighted}</code></pre></div>`;
+}
+
+async function renderCSV(url, body) {
+  const r = await fetch(`${url}?t=${Date.now()}`);
+  if (!r.ok) throw new Error();
+  const rows = parseCSV(await r.text());
+  if (!rows.length) { body.innerHTML = '<div class="state-msg">Empty file.</div>'; return; }
+  const [head, ...data] = rows;
+  body.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+        <tbody>${data.map(row => `<tr>${row.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+async function renderExcel(url, body) {
+  if (!window.XLSX) await loadScript('https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js');
+  const r = await fetch(url);
+  if (!r.ok) throw new Error();
+  const wb = XLSX.read(await r.arrayBuffer(), { type: 'array' });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  body.innerHTML = `<div class="table-wrap">${XLSX.utils.sheet_to_html(ws)}</div>`;
+}
+
+function renderImage(url, body) {
+  body.innerHTML = `<div class="img-wrap"><img src="${url}" alt="image" loading="lazy" /></div>`;
+}
+
+function renderDownload(url, fname, body) {
+  const e = ext(fname).toUpperCase();
+  body.innerHTML = `
+    <div class="dl-card">
+      <div class="dl-card-ext">.${esc(e.toLowerCase())}</div>
+      <div class="dl-card-name">${esc(fname)}</div>
+      <div class="dl-card-desc">This file type can't be previewed in the browser.</div>
+      <a href="${url}" class="dl-card-btn" download="${esc(fname)}">↓ &nbsp;Download</a>
+    </div>`;
+}
+
+// ── HELPERS ───────────────────────────────────────
+function parseCSV(text) {
+  return text.trim().split('\n').map(line => {
+    const cells = []; let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQ = !inQ; }
+      else if (line[i] === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
+      else { cur += line[i]; }
+    }
+    cells.push(cur.trim());
+    return cells;
+  });
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
 }
 
 function fmtDate(d) {
@@ -463,12 +665,11 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// wire up
+// ── WIRE UP ───────────────────────────────────────
 document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 document.getElementById('pw-submit').addEventListener('click', tryUnlock);
 document.getElementById('lock-btn').addEventListener('click', lockVault);
 
-// restore session
 if (sessionStorage.getItem('vault_ok') === '1') showVault();
 else setTimeout(() => document.getElementById('pw-input').focus(), 50);
 </script>
