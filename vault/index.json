@@ -1,6 +1,11 @@
 {
   "documents": [
     {
+      "title": "Vault Install",
+      "file": "vault_install.skill",
+      "date": "2026-06-12"
+    },
+    {
       "title": "vault test",
       "file": "test.txt",
       "date": "2026-06-12"
