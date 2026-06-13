@@ -3,645 +3,473 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Marcus Kittelson</title>
-  <meta name="description" content="Selected work experience." />
-
-  <!-- Fonts & Tailwind -->
+  <title>MK Vault</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.11.0/build/sha256.min.js"></script>
   <style>
-    :root { color-scheme: dark; }
-    html { scroll-behavior: smooth; }
-    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* === FULL-SITE BACKGROUND ===
-       Canvas sits behind all content and renders:
-       - cursor-following purple aura ("void")
-       - galaxy stars + twinkle
-       - fast meteors (with gravity warp toward center)
-    */
-    #galaxy { position: fixed; inset: 0; z-index: -2; width: 100vw; height: 100vh; display:block; background:#08090b; }
+    :root {
+      --bg:          #08090b;
+      --surface:     rgba(255,255,255,0.04);
+      --border:      rgba(255,255,255,0.07);
+      --text:        #d4d6da;
+      --text-dim:    #8a919e;
+      --text-muted:  #555b67;
+      --accent:      #a78bfa;
+      --accent-glow: rgba(167,139,250,0.18);
+    }
 
-    /* Decorative cursor ring (hidden on touch). */
-    .cursor-ring { position: fixed; top:0; left:0; width:28px; height:28px; pointer-events:none; border-radius:999px; border:1px solid rgba(255,255,255,0.25); transform:translate(-50%,-50%); transition: width .2s, height .2s; z-index:50; mix-blend-mode:difference; }
-    @media (max-width: 640px) { .cursor-ring { display:none; } }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    /* Frosted glass cards */
-    .glass { backdrop-filter: blur(12px); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.08); }
+    /* ── LOCK SCREEN ──────────────────────────────── */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    /* Underline-on-hover for links */
-    .u { background: linear-gradient(currentColor, currentColor) 0 100%/0 2px no-repeat; transition: background-size .3s; }
-    .u:hover { background-size: 100% 2px; }
+    .lock-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      width: 100%;
+      max-width: 320px;
+      padding: 0 1.5rem;
+    }
 
-    /* Reveal-on-scroll */
-    .reveal { opacity:0; transform: translateY(12px); }
-    .reveal.visible { opacity:1; transform: translateY(0); transition: opacity .5s ease, transform .5s ease; }
+    .lock-monogram {
+      font-size: 2.75rem;
+      font-weight: 600;
+      letter-spacing: -0.05em;
+      color: var(--accent);
+      line-height: 1;
+    }
 
-    /* Top scroll progress bar */
-    .progress { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,#22d3ee,#a78bfa,#34d399); z-index:60; }
+    .lock-sub {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      text-align: center;
+    }
 
-    /* Language meters */
-    .bar { display:flex; align-items:center; gap:12px; }
-    .bar .label { width:220px; font-weight:700; color:#fafafa; letter-spacing:.2px; }
-    .bar .meter { position:relative; height:14px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden; flex:1; }
-    .bar .meter::after { content:""; position:absolute; inset:0; width:var(--val,0%); background:linear-gradient(90deg,#60a5fa,#a78bfa,#34d399); transition:width .9s ease; }
+    .lock-form {
+      display: flex;
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-    /* Responsive title sizing */
-    .hero-title { font-weight: 900; line-height: .95; letter-spacing:-.02em; font-size: clamp(2.6rem, 10vw, 6rem); }
+    .lock-form:focus-within {
+      border-color: rgba(167,139,250,0.5);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .lock-form.shake {
+      border-color: #f87171;
+      animation: shake 0.38s ease;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(4px); }
+    }
+
+    #pw-input {
+      flex: 1;
+      background: var(--surface);
+      border: none;
+      outline: none;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+      letter-spacing: 0.12em;
+      min-width: 0;
+    }
+
+    #pw-input::placeholder {
+      color: var(--text-muted);
+      letter-spacing: 0;
+      font-family: Inter, sans-serif;
+      font-size: 0.875rem;
+    }
+
+    #pw-submit {
+      background: var(--surface);
+      border: none;
+      border-left: 1px solid var(--border);
+      padding: 0 1.1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      transition: color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+
+    #pw-submit:hover { color: var(--accent); background: var(--accent-glow); }
+
+    .lock-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── VAULT LAYOUT ─────────────────────────────── */
+    #vault {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    #sidebar {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 1.4rem 1.25rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 0.55rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+    }
+
+    .sidebar-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    #doc-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .doc-item {
+      padding: 0.65rem 1.25rem;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: background 0.12s, border-color 0.12s;
+      user-select: none;
+    }
+
+    .doc-item:hover { background: var(--surface); }
+
+    .doc-item.active {
+      background: var(--accent-glow);
+      border-left-color: var(--accent);
+    }
+
+    .doc-item-title {
+      font-size: 0.845rem;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.4;
+    }
+
+    .doc-item.active .doc-item-title { color: var(--accent); }
+
+    .doc-item-date {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .sidebar-footer {
+      padding: 0.9rem 1.25rem;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .lock-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.45rem 0.75rem;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-family: Inter, sans-serif;
+      letter-spacing: 0.04em;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .lock-btn:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* CONTENT */
+    #content {
+      overflow-y: auto;
+      padding: 3rem 4rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    #doc-header {
+      margin-bottom: 2.25rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #doc-title-el {
+      font-size: 1.65rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: #eceef1;
+      line-height: 1.3;
+      margin-bottom: 0.4rem;
+    }
+
+    #doc-date-el {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* MARKDOWN */
+    #doc-body { max-width: 680px; line-height: 1.78; font-size: 0.925rem; }
+
+    #doc-body h1 { font-size: 1.45rem; font-weight: 600; letter-spacing: -0.025em; color: #eceef1; margin: 2rem 0 0.9rem; }
+    #doc-body h2 { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.015em; color: #dde0e5; margin: 1.75rem 0 0.7rem; }
+    #doc-body h3 { font-size: 0.975rem; font-weight: 600; color: #cdd1d9; margin: 1.5rem 0 0.5rem; }
+    #doc-body p  { margin-bottom: 1rem; }
+    #doc-body a  { color: var(--accent); text-decoration: none; }
+    #doc-body a:hover { text-decoration: underline; }
+    #doc-body ul, #doc-body ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    #doc-body li { margin-bottom: 0.3rem; }
+    #doc-body hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    #doc-body strong { color: #e6e8ec; font-weight: 600; }
+    #doc-body em { color: var(--text-dim); }
+    #doc-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 0.4rem 0 0.4rem 1.2rem;
+      color: var(--text-dim);
+      margin: 1.25rem 0;
+    }
+    #doc-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.83em;
+      background: rgba(167,139,250,0.1);
+      color: #c4b5fd;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+    #doc-body pre {
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+    }
+    #doc-body pre code {
+      background: none;
+      color: var(--text);
+      padding: 0;
+      font-size: 0.85rem;
+    }
+    #doc-body table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.875rem; }
+    #doc-body th { text-align: left; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-dim); font-weight: 500; }
+    #doc-body td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.035); }
+
+    /* STATES */
+    .state-msg { color: var(--text-muted); font-size: 0.85rem; padding: 3rem 0; }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      #vault { grid-template-columns: 1fr; grid-template-rows: 200px 1fr; }
+      #sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+      #content { padding: 1.5rem 1.25rem; }
+    }
   </style>
 </head>
-<body class="bg-neutral-950 text-neutral-200 antialiased">
-  <!-- FULLSCREEN BACKGROUND CANVAS (decorative only) -->
-  <canvas id="galaxy" aria-hidden="true"></canvas>
+<body>
 
-  <!-- Optional cursor ring -->
-  <div class="cursor-ring" id="cursor" aria-hidden="true"></div>
-
-  <!-- Scroll progress bar -->
-  <div class="progress" id="pg"></div>
-
-  <!-- Page shell -->
-  <div class="mx-auto max-w-5xl px-5 sm:px-6 py-10 sm:py-14">
-    <header class="flex items-center justify-between">
-      <a href="#top" class="text-sm sm:text-base tracking-widest text-neutral-400 u">MK</a>
-      <nav class="hidden sm:flex items-center gap-5 text-base">
-        <a href="#work" class="u text-neutral-300">Work</a>
-        <a href="#education" class="u text-neutral-300">Education</a>
-        <a href="#skills" class="u text-neutral-300">Languages</a>
-      </nav>
-    </header>
-
-    <!-- Hero -->
-    <section id="top" class="mt-16 sm:mt-24">
-      <h1 class="hero-title text-white">Marcus&nbsp;Kittelson</h1>
-      <p class="mt-5 text-xl sm:text-2xl text-neutral-300 max-w-3xl reveal">
-        Software Engineering @ UCalgary. Fast learner with strong presentation skills; analyze data and economic trends, surface insights, and present them clearly. I build data tools, ML-adjacent systems, and high-signal automation. Website intentionally minimal.
-      <div class="mt-9 flex flex-wrap items-center gap-4">
-        <a id="linkedin" href="https://www.linkedin.com/in/marcus-kittelson/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-base font-semibold text-white glass transition-transform will-change-transform">
-          <!-- LinkedIn icon -->
-          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5"><path fill="currentColor" d="M4.98 3.5A2.5 2.5 0 1 1 5 8.5a2.5 2.5 0 0 1-.02-5zM3 9h4v12H3zM9 9h3.7v1.7h.05c.52-.98 1.8-2.02 3.7-2.02 3.96 0 4.7 2.6 4.7 5.98V21H18v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H10V9z"/></svg>
-          Connect on LinkedIn
-        </a>
-
-        <!-- View Work -->
-        <a href="#work" class="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-base font-semibold text-neutral-100/90 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-700 transition-colors">
-          View Work ↓
-        </a>
-
-        <!-- View Education (new) -->
-        <a href="#education" class="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-base font-semibold text-neutral-100/90 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-700 transition-colors">
-          View Education ↓
-        </a>
-      </div>
-    </section>
-
-    <!-- Work -->
-    <main id="work" class="mt-16 sm:mt-24">
-      <h2 class="text-2xl sm:text-3xl font-semibold text-white">Selected Work</h2>
-      <div class="mt-7 grid grid-cols-1 gap-6">
-        <article class="tilt group rounded-2xl glass p-6 reveal">
-          <div class="tilt-inner">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="text-xl font-semibold text-white">NuVista Energy</h3>
-                <p class="text-base text-neutral-300">Development & Planning Engineering Intern · May 2024 – Present</p>
-              </div>
-              <span class="text-[10px] uppercase tracking-widest text-emerald-300/90">Engineering</span>
-            </div>
-            <ul class="mt-4 text-base text-neutral-200 space-y-2 list-disc pl-5">
-              <li>Python → Spotfire automations: reduced well-planning from ~64h → ~2h.</li>
-              <li>Hydraulic fracturing design & sequencing on $10M+ programs.</li>
-              <li>SQL/Spotfire ops dashboards over 1.7M+ datapoints/day.</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="tilt group rounded-2xl glass p-6 reveal">
-          <div class="tilt-inner">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="text-xl font-semibold text-white">Tardigrade Ltd. - Capstone</h3>
-                <p class="text-base text-neutral-300">Database & Algorithmic Trading Systems · Sept 2025 – Present</p>
-              </div>
-              <span class="text-[10px] uppercase tracking-widest text-violet-300/90">Capstone</span>
-            </div>
-            <ul class="mt-4 text-base text-neutral-200 space-y-2 list-disc pl-5">
-              <!-- Removed explicit PostgreSQL mention as requested -->
-              <li>High-throughput market data pipeline handling 100M+ datapoints/month.</li>
-              <li>Python-based ML error/anomaly detection → query-time reduction & increased data accuracy.</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="tilt group rounded-2xl glass p-6 reveal">
-          <div class="tilt-inner">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="text-xl font-semibold text-white">M2M Tech</h3>
-                <p class="text-base text-neutral-300">Machine Learning & Data Science Intern · May 2023 – Aug 2023</p>
-              </div>
-              <span class="text-[10px] uppercase tracking-widest text-sky-300/90">ML</span>
-            </div>
-            <p class="mt-4 text-base text-neutral-200">Applied ML for predictive analytics & automation (government-sponsored).</p>
-          </div>
-        </article>
-
-        <article class="tilt group rounded-2xl glass p-6 reveal">
-          <div class="tilt-inner">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="text-xl font-semibold text-white">HBO - <em>The Last of Us</em></h3>
-                <p class="text-base text-neutral-300">On-Set Safety & Network Ops Assistant · Jul 2021 – Jun 2022</p>
-              </div>
-              <span class="text-[10px] uppercase tracking-widest text-fuchsia-300/90">Operations</span>
-            </div>
-            <p class="mt-4 text-base text-neutral-200">
-              Dynamic, fast-paced production environment; including 80+ hour week and night shifts performing a variety of safety tasks.
-            </p>
-          </div>
-        </article>
-      </div>
-    </main>
-
-    <!-- Education (moved above Languages, horizontal/compact focus) -->
-    <section id="education" class="mt-16 sm:mt-24">
-      <h2 class="text-2xl sm:text-3xl font-semibold text-white">Education</h2>
-
-      <!-- 2-up layout on desktop for a horizontal feel -->
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- UCalgary summary (compact bullets) -->
-        <article class="rounded-2xl glass p-6 reveal">
-          <div class="flex items-start justify-between gap-4">
-            <h3 class="text-xl font-semibold text-white">B.Sc. Software Engineering</h3>
-            <span class="text-[10px] uppercase tracking-widest text-emerald-300/90">UCalgary</span>
-          </div>
-          <ul class="mt-4 text-base text-neutral-200 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 list-disc pl-5">
-            <li><strong>GPA:</strong> 3.94</li>
-            <li><strong>Dean’s List</strong></li>
-            <li><strong>Co-op</strong> program</li>
-            <li><strong>Entrepreneurship Certificate</li>
-          </ul>
-        </article>
-
-        <!-- Stanford Online -->
-        <article class="rounded-2xl glass p-6 reveal">
-          <div class="flex items-start justify-between gap-4">
-            <h3 class="text-xl font-semibold text-white">ML Specialization - Certificate</h3>
-            <span class="text-[10px] uppercase tracking-widest text-sky-300/90">Stanford Online</span>
-          </div>
-          <p class="mt-4 text-base text-neutral-200">
-            Completed advanced coursework in supervised and unsupervised learning, regression and classification models, neural networks, recommender systems, and practical model-evaluation workflows.
-          </p>
-        </article>
-      </div>
-
-      <!-- Hackathons ribbon card -->
-      <div class="mt-6 rounded-2xl glass p-6 reveal">
-        <div class="flex items-start justify-between gap-4">
-          <h3 class="text-xl font-semibold text-white">Hackathons</h3>
-          <span class="text-[10px] uppercase tracking-widest text-fuchsia-300/90">Competitions</span>
-        </div>
-        <p class="mt-4 text-base text-neutral-200">
-          Participant in local and global hackathons, achieving <strong>podium success</strong> in both.
-        </p>
-      </div>
-    </section>
-
-    <!-- Languages (now below Education) -->
-    <section id="skills" class="mt-16 sm:mt-24">
-      <h2 class="text-2xl sm:text-3xl font-semibold text-white">Technical Stack</h2>
-      <div class="mt-6 glass rounded-2xl p-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div class="bar"><div class="label">Python</div><div class="meter" style="--val:99%"></div></div>
-
-          <div class="bar"><div class="label">SQL</div><div class="meter" style="--val:95%"></div></div>
-          <div class="bar"><div class="label">Spotfire</div><div class="meter" style="--val:95%"></div></div>
-
-          <div class="bar"><div class="label">PostgreSQL</div><div class="meter" style="--val:90%"></div></div>
-          <div class="bar"><div class="label">MySQL</div><div class="meter" style="--val:90%"></div></div>
-
-          <div class="bar"><div class="label">C / C++</div><div class="meter" style="--val:85%"></div></div>
-          <div class="bar"><div class="label">PyTorch</div><div class="meter" style="--val:85%"></div></div>
-
-          <div class="bar"><div class="label">Java</div><div class="meter" style="--val:80%"></div></div>
-          <div class="bar"><div class="label">HTML & CSS</div><div class="meter" style="--val:80%"></div></div>
-          <div class="bar"><div class="label">TensorFlow</div><div class="meter" style="--val:80%"></div></div>
-
-          <div class="bar"><div class="label">Docker</div><div class="meter" style="--val:72%"></div></div>
-          <div class="bar"><div class="label">TypeScript / JavaScript</div><div class="meter" style="--val:70%"></div></div>
-          <div class="bar"><div class="label">React</div><div class="meter" style="--val:70%"></div></div>
-          <div class="bar"><div class="label">MongoDB</div><div class="meter" style="--val:70%"></div></div>
-          <div class="bar"><div class="label">Google Cloud Platform</div><div class="meter" style="--val:70%"></div></div>
-
-          <div class="bar"><div class="label">AWS (EC2, S3, Lambda)</div><div class="meter" style="--val:67%"></div></div>
-
-          <div class="bar"><div class="label">Firebase</div><div class="meter" style="--val:64%"></div></div>
-          <div class="bar"><div class="label">Kubernetes</div><div class="meter" style="--val:64%"></div></div>
-
-          <div class="bar"><div class="label">Node.js</div><div class="meter" style="--val:60%"></div></div>
-          <div class="bar"><div class="label">RISC-V Assembly</div><div class="meter" style="--val:60%"></div></div>
-
-          <div class="bar"><div class="label">BigQuery</div><div class="meter" style="--val:56%"></div></div>
-
-          <div class="bar"><div class="label">MATLAB</div><div class="meter" style="--val:50%"></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footnote -->
-    <div class="mt-10 text-xs text-neutral-400 bg-neutral-900/60 border border-neutral-800 rounded-xl p-3">
-      This site was originally built for my drone consulting business and has been repurposed as a personal CV site. Fully built in HTML &amp; CSS/JS using math-only visuals - no React or heavy frameworks.
+<!-- ── LOCK SCREEN ── -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div style="text-align:center">
+      <div class="lock-monogram">MK</div>
+      <div class="lock-sub">vault</div>
     </div>
-
-    <footer class="mt-6 sm:mt-10 border-t border-neutral-900 pt-6 text-sm text-neutral-400">
-      <p>© <span id="y"></span> Marcus Kittelson</p>
-    </footer>
+    <div class="lock-form" id="lock-form">
+      <input id="pw-input" type="password" placeholder="passphrase"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <button id="pw-submit" type="button" aria-label="Unlock">→</button>
+    </div>
+    <div class="lock-hint">enter to continue</div>
   </div>
+</div>
 
-  <script>
-    /* ===========================================================
-       GLOBAL UI UTILITIES
-       =========================================================== */
+<!-- ── VAULT ── -->
+<div id="vault" hidden>
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-logo">MK</span>
+      <span class="sidebar-label">Vault</span>
+    </div>
+    <div id="doc-list">
+      <div class="state-msg" style="padding:1rem 1.25rem">Loading…</div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="lock-btn" id="lock-btn">⌁ &nbsp;lock vault</button>
+    </div>
+  </aside>
 
-    // Respect "reduced motion" for accessibility.
-    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Detect coarse (touch) pointers to disable hover effects on touch.
-    const isTouch = matchMedia('(pointer: coarse)').matches;
+  <main id="content">
+    <div id="doc-header" hidden>
+      <div id="doc-title-el"></div>
+      <div id="doc-date-el"></div>
+    </div>
+    <div id="doc-body">
+      <div class="state-msg">Select a document from the sidebar.</div>
+    </div>
+  </main>
+</div>
 
-    // Footer year
-    document.getElementById('y').textContent = new Date().getFullYear();
+<script>
+const HASH     = 'cb660be7cab286d50e71f262df332843f22047c8e09b42cf25106cf1de3c589b';
+const RAW_BASE = 'https://raw.githubusercontent.com/mkmsite/mkmsite.github.io/main';
 
-    // Cursor ring follows the mouse and grows over interactive elements.
-    const cursor = document.getElementById('cursor');
-    if (!isTouch) {
-      window.addEventListener('mousemove', (e) => {
-        window.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top  = e.clientY + 'px';
-});
-      });
-      document.querySelectorAll('a, button, .tilt').forEach(el => {
-        el.addEventListener('mouseenter', () => { cursor.style.width = '56px'; cursor.style.height = '56px'; });
-        el.addEventListener('mouseleave', () => { cursor.style.width = '28px'; cursor.style.height = '28px'; });
-      });
-    } else { cursor.remove(); }
+function tryUnlock() {
+  const pw = document.getElementById('pw-input').value.trim();
+  if (!pw) return;
+  if (sha256(pw) === HASH) {
+    sessionStorage.setItem('vault_ok', '1');
+    showVault();
+  } else {
+    const form = document.getElementById('lock-form');
+    form.classList.add('shake');
+    setTimeout(() => form.classList.remove('shake'), 400);
+    document.getElementById('pw-input').select();
+  }
+}
 
-    // 3D-ish card tilt driven by mouse position (skips on touch).
-    document.querySelectorAll('.tilt').forEach(card => {
-      if (isTouch) return;
-      const inner = card.querySelector('.tilt-inner');
-      card.addEventListener('mousemove', (e) => {
-        const r = card.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width - 0.5;  // -0.5 .. 0.5
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        inner.style.transform = `rotateX(${(-py * 8).toFixed(2)}deg) rotateY(${(px * 10).toFixed(2)}deg)`;
-      });
-      card.addEventListener('mouseleave', () => { inner.style.transform = 'rotateX(0) rotateY(0)'; });
-    });
+function showVault() {
+  document.getElementById('lock-screen').hidden = true;
+  document.getElementById('vault').hidden = false;
+  loadIndex();
+}
 
-    // Reveal-on-scroll: fades and slides elements in once when they enter the viewport.
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){ entry.target.classList.add('visible'); io.unobserve(entry.target); }
-      });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+function lockVault() {
+  sessionStorage.removeItem('vault_ok');
+  document.getElementById('vault').hidden = true;
+  document.getElementById('lock-screen').hidden = false;
+  document.getElementById('pw-input').value = '';
+  setTimeout(() => document.getElementById('pw-input').focus(), 50);
+}
 
-    // Scroll progress bar
-    const prog = document.getElementById('pg');
-    const onScroll = () => {
-      const sc = window.scrollY;
-      const h = document.documentElement.scrollHeight - innerHeight;
-      const w = Math.max(0, Math.min(1, sc / Math.max(1,h)));
-      prog.style.width = (w*100) + '%';
-    };
-    addEventListener('scroll', onScroll); onScroll();
+window._docs = [];
 
-    /* ===========================================================
-       GALAXY CANVAS
-       - Cursor-following purple aura (no lines)
-       - Stars (twinkle + slow rotation)
-       - Meteors from random edges
-       - Gravity warp toward the galactic core (center)
-       Everything is math-only; no external libraries.
-       =========================================================== */
-    (function(){
-      const c = document.getElementById('galaxy'); if(!c) return;
-      const ctx = c.getContext('2d');
+async function loadIndex() {
+  try {
+    const r = await fetch(`${RAW_BASE}/vault/index.json?t=${Date.now()}`);
+    if (!r.ok) throw new Error();
+    const data = await r.json();
+    window._docs = data.documents || [];
+    renderList(window._docs);
+    if (window._docs.length) openDoc(window._docs[0], document.querySelector('.doc-item'));
+  } catch {
+    document.getElementById('doc-list').innerHTML =
+      '<div class="state-msg" style="padding:1rem 1.25rem">No documents found.</div>';
+  }
+}
 
-      // Device pixel ratio for crisp rendering; clamp to 2 for perf.
-      let dpr = Math.min(2, devicePixelRatio||1);
-      function rs(){ c.width = innerWidth * dpr; c.height = innerHeight * dpr; }
-      rs(); addEventListener('resize', rs);
+function renderList(docs) {
+  const list = document.getElementById('doc-list');
+  if (!docs.length) {
+    list.innerHTML = '<div class="state-msg" style="padding:1rem 1.25rem">No documents yet.</div>';
+    return;
+  }
+  list.innerHTML = docs.map((d, i) => `
+    <div class="doc-item" onclick="openDoc(window._docs[${i}], this)">
+      <div class="doc-item-title">${esc(d.title)}</div>
+      <div class="doc-item-date">${esc(d.date || '')}</div>
+    </div>
+  `).join('');
+}
 
-      // Helpers
-      const rand = (a=0,b=1)=> a + Math.random()*(b-a);
-      const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
+async function openDoc(doc, el) {
+  document.querySelectorAll('.doc-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
 
-      // Tunables
-      const STAR_COUNT = isTouch ? 900 : 2000;     // total stars
-      const ARM_COUNT  = 5;                        // spiral arms
-      const ROT_SPEED  = 0.00007;                  // slow galaxy swirl
-      const TWINKLE_F  = [0.0003, 0.0025];         // twinkle speed range
+  const header = document.getElementById('doc-header');
+  const body   = document.getElementById('doc-body');
 
-      /* ----------------------- Cursor Purple Aura -----------------------
-         We render a soft radial gradient centered at the cursor each frame.
-         It subtly tints space without drawing any hard lines.
-      ------------------------------------------------------------------ */
-      let mouseX = innerWidth  * 0.5;  // start at center
-      let mouseY = innerHeight * 0.5;
-      if (!isTouch) {
-        addEventListener('mousemove', (e)=>{ mouseX = e.clientX; mouseY = e.clientY; });
-      }
-      function paintCursorVoid(w, h) {
-        const x = mouseX * dpr, y = mouseY * dpr;
-        const r = Math.max(w, h) * 0.35; // radius of aura (scaled to screen)
+  header.hidden = false;
+  document.getElementById('doc-title-el').textContent = doc.title;
+  document.getElementById('doc-date-el').textContent  = fmtDate(doc.date);
+  body.innerHTML = '<div class="state-msg">Loading…</div>';
 
-        const g = ctx.createRadialGradient(x, y, r*0.05, x, y, r);
-        // Very soft purples, mostly transparent.
-        g.addColorStop(0.00, 'rgba(160, 90, 255, 0.12)'); // bright core
-        g.addColorStop(0.40, 'rgba(120, 60, 220, 0.07)');
-        g.addColorStop(1.00, 'rgba(50, 30, 90,  0.02)');  // fade to void
+  try {
+    const r = await fetch(`${RAW_BASE}/vault/${doc.file}?t=${Date.now()}`);
+    if (!r.ok) throw new Error();
+    body.innerHTML = marked.parse(await r.text());
+  } catch {
+    body.innerHTML = '<div class="state-msg">Could not load document.</div>';
+  }
 
-        ctx.save();
-        ctx.globalCompositeOperation = 'screen'; // blends nicely with stars
-        ctx.fillStyle = g;
-        ctx.fillRect(0,0,w,h);
-        ctx.restore();
-      }
+  document.getElementById('content').scrollTo(0, 0);
+}
 
-      /* ---------------------------- Stars -----------------------------
-         We render two fields:
-         - bgStars: isotropic scatter for depth
-         - armStars: spiral-distributed stars for galaxy arms
-         Each star has its own twinkle frequency and phase.
-      ------------------------------------------------------------------ */
-      const armStars = [];
-      for (let i = 0; i < Math.floor(STAR_COUNT * 0.5); i++) {
-        const arm = i % ARM_COUNT;
-        const dist  = Math.pow(Math.random(), 0.7); // bias toward core
-        const angle = (arm / ARM_COUNT) * Math.PI * 2 + dist * 5.6 + (Math.random()*0.66-0.33);
-        const radius = dist * 0.62;
-        armStars.push({
-          theta: angle, dist: radius,
-          r: 0.5 + Math.random() * 1.4,
-          baseA: 0.35 + Math.random() * 0.60,     // base brightness
-          hue: 200 + (Math.random() * 110 - 20),   // blueish range
-          twf: rand(TWINKLE_F[0], TWINKLE_F[1]),
-          phase: Math.random() * Math.PI * 2
-        });
-      }
+function fmtDate(d) {
+  if (!d) return '';
+  try { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+  catch { return d; }
+}
 
-      const bgStars = [];
-      for (let i = 0; i < Math.floor(STAR_COUNT * 0.5); i++) {
-        const rr = Math.pow(Math.random(), 0.55);
-        const ang = Math.random() * Math.PI * 2;
-        const rad = rr * 0.85;
-        bgStars.push({
-          x: Math.cos(ang) * rad,
-          y: Math.sin(ang) * rad,
-          r: 0.4 + Math.random() * 0.9,
-          baseA: 0.2 + Math.random() * 0.5,
-          hue: 210 + (Math.random() * 90 - 30),
-          twf: rand(TWINKLE_F[0], TWINKLE_F[1]),
-          phase: Math.random() * Math.PI * 2
-        });
-      }
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
-      /* ---------------------------- Meteors ---------------------------
-         - Spawn from random screen edges at random intervals
-         - Velocity is fast; each meteor has a long, fading trail
-         - A subtle gravitational field centered on canvas bends
-           trajectories inward (r^-2 softened) for a space-warp feel
-      ------------------------------------------------------------------ */
-      const meteors = [];
-      function spawnMeteorRandomEdge(w, h) {
-        // Choose a random edge: 0=left,1=right,2=top,3=bottom
-        const edge = Math.floor(rand(0,4));
-        let x, y, angle;
-        if (edge === 0) { // left -> right-ish
-          x = 0; y = rand(h*0.1, h*0.9);
-          angle = rand(-Math.PI*0.10, Math.PI*0.10);
-        } else if (edge === 1) { // right -> left-ish
-          x = w; y = rand(h*0.1, h*0.9);
-          angle = Math.PI + rand(-Math.PI*0.10, Math.PI*0.10);
-        } else if (edge === 2) { // top -> down-right/left
-          x = rand(w*0.1, w*0.9); y = 0;
-          angle = rand(Math.PI*0.25, Math.PI*0.75);
-        } else { // bottom -> up-right/left
-          x = rand(w*0.1, w*0.9); y = h;
-          angle = -rand(Math.PI*0.25, Math.PI*0.75);
-        }
-        spawnMeteor(x, y, angle, 1.2);
-      }
+// wire up
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+document.getElementById('pw-submit').addEventListener('click', tryUnlock);
+document.getElementById('lock-btn').addEventListener('click', lockVault);
 
-      function spawnMeteor(x, y, angle, speedMul=1) {
-        const speed = (4.5 + Math.random() * 3.0) * dpr * speedMul; // fast
-        const life  = (600 + Math.random() * 600) * 1.5;            // trail duration
-        meteors.push({
-          x, y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          life,
-          trail: [],
-          maxTrail: 58
-        });
-      }
-
-      // Random ambient spawning with jitter.
-      let nextSpawnAt = 0;
-      function scheduleNextMeteor(now) {
-        // random delay 2000–5500ms
-        nextSpawnAt = now + rand(2000, 5500);
-      }
-
-      // Manual spawn on pointer down (shoot roughly to the right/up-right)
-      addEventListener('pointerdown', (e)=>{
-        const rect = c.getBoundingClientRect();
-        spawnMeteor((e.clientX-rect.left)*dpr, (e.clientY-rect.top)*dpr, rand(-Math.PI*0.95,-Math.PI*0.55), 1.1);
-      });
-
-      /* --------------------- Gravity warp (center) --------------------
-         We apply a tiny gravitational acceleration toward the galactic
-         core (canvas center). A "softening" term prevents singularities.
-         This bends meteor paths slightly for a natural space-warp.
-      ------------------------------------------------------------------ */
-      function applyGravity(m, w, h, dt) {
-        const cx = w/2, cy = h/2;
-        const dx = cx - m.x, dy = cy - m.y;
-        const r2 = dx*dx + dy*dy;
-        const soft = (w*h) * 0.00002;  // softening constant to avoid huge forces near center
-        const G = 12000 * dpr;         // gravitational constant (tweak for more/less bend)
-        const dtSec = dt / 1000;       // scale to time (makes behavior FPS-independent)
-
-        // Acceleration = G * r_hat / (r^2 + soft)
-        const ax = (G * dx) / (r2 + soft);
-        const ay = (G * dy) / (r2 + soft);
-
-        // Update velocity
-        m.vx += ax * dtSec;
-        m.vy += ay * dtSec;
-      }
-
-      // Animation timing
-      let t0 = performance.now();
-      scheduleNextMeteor(t0);
-
-      function draw(now){
-        const dt = now - t0; t0 = now;
-        const w = c.width, h = c.height; const s = Math.min(w,h);
-
-        // Clear the frame
-        ctx.clearRect(0,0,w,h);
-
-        // --- Cursor-following purple aura (no lines) ---
-        paintCursorVoid(w, h);
-
-        // --- Galaxy core & stars (rendered in a rotating space) ---
-        ctx.save();
-        ctx.translate(w/2, h/2);
-        ctx.rotate(now*ROT_SPEED);
-
-        // Soft core glow
-        const core = ctx.createRadialGradient(0,0,0, 0,0, s*0.24);
-        core.addColorStop(0,'rgba(255,255,255,0.08)');
-        core.addColorStop(1,'rgba(255,255,255,0)');
-        ctx.fillStyle = core;
-        ctx.beginPath(); ctx.arc(0,0,s*0.24,0,Math.PI*2); ctx.fill();
-
-        // Background scatter stars (twinkle)
-        for (const st of bgStars){
-          const x = st.x*s, y = st.y*s;
-          const tw = st.baseA * (0.6 + 0.4*Math.sin(now*st.twf + st.phase));
-          ctx.globalAlpha = clamp(tw,0,1);
-          ctx.fillStyle = `hsl(${st.hue}deg 70% 68%)`;
-          ctx.beginPath(); ctx.arc(x,y,st.r*dpr,0,Math.PI*2); ctx.fill();
-        }
-
-        // Spiral arm stars (twinkle)
-        for (const st of armStars){
-          const d = st.dist*s; const x = Math.cos(st.theta)*d; const y = Math.sin(st.theta)*d;
-          const tw = st.baseA * (0.7 + 0.3*Math.sin(now*st.twf + st.phase));
-          ctx.globalAlpha = clamp(tw,0,1);
-          ctx.fillStyle = `hsl(${st.hue}deg 70% 72%)`;
-          ctx.beginPath(); ctx.arc(x,y,st.r*dpr,0,Math.PI*2); ctx.fill();
-        }
-
-        // Very faint star-to-star "constellation" lines for cohesion (subtle!)
-        ctx.globalAlpha = 0.05; ctx.strokeStyle = 'rgba(166,202,255,0.35)'; ctx.beginPath();
-        for(let i=0;i<armStars.length;i+=7){
-          const a=armStars[i], b=armStars[(i+11)%armStars.length];
-          const ax=Math.cos(a.theta)*a.dist*s, ay=Math.sin(a.theta)*a.dist*s;
-          const bx=Math.cos(b.theta)*b.dist*s, by=Math.sin(b.theta)*b.dist*s;
-          ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
-        }
-        ctx.stroke();
-
-        ctx.restore();
-
-        // --- Meteors (long, glowing trails) ---
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter'; // adds glow when overlapping
-        meteors.forEach(m => {
-          // Gravity warp before integration (bends trajectory)
-          applyGravity(m, w, h, dt);
-
-          // Integrate motion
-          m.x += m.vx; m.y += m.vy; m.life -= dt;
-
-          // Capture trail positions (front of array is the head)
-          m.trail.unshift({ x: m.x, y: m.y });
-          if (m.trail.length > m.maxTrail) m.trail.pop();
-
-          // Draw trail segments from head backwards, fading out
-          let a = 0.16;
-          for (let i = 0; i < m.trail.length - 1; i++) {
-            const p = m.trail[i], q = m.trail[i + 1];
-            const grad = ctx.createLinearGradient(p.x, p.y, q.x, q.y);
-            grad.addColorStop(0, `rgba(210,220,255,${a})`);
-            grad.addColorStop(1, `rgba(140,170,255,${a * 0.6})`);
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = (4.2 - i * 0.08) * dpr;
-            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
-            a *= 0.9;
-          }
-
-          // Meteor head (bright point)
-          ctx.fillStyle = 'rgba(255,255,255,0.98)';
-          ctx.beginPath(); ctx.arc(m.x, m.y, 2.0 * dpr, 0, Math.PI * 2); ctx.fill();
-        });
-        // Remove dead meteors
-        for (let i = meteors.length - 1; i >= 0; i--) if (meteors[i].life <= 0) meteors.splice(i, 1);
-        ctx.restore();
-
-        // --- Ambient meteor spawning (randomized intervals & edges) ---
-        if (!isReduced && now >= nextSpawnAt && meteors.length < 3) {
-          scheduleNextMeteor(now);
-          spawnMeteorRandomEdge(w, h);
-        }
-
-        // --- Cinematic vignette & cool color wash ---
-        ctx.save();
-        const vign = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.25, w/2, h/2, Math.max(w,h)*0.85);
-        vign.addColorStop(0, 'rgba(0,0,0,0)');
-        vign.addColorStop(1, 'rgba(0,0,0,0.35)');
-        ctx.fillStyle = vign;
-        ctx.fillRect(0,0,w,h);
-
-        ctx.globalCompositeOperation = 'overlay';
-        ctx.fillStyle = 'rgba(40,70,120,0.06)'; // very subtle bluish overlay to deepen space
-        ctx.fillRect(0,0,w,h);
-        ctx.restore();
-
-        if (!isReduced) requestAnimationFrame(draw);
-      }
-
-      // Kick off animation loop (respects reduced motion)
-      if (!isReduced) requestAnimationFrame(draw);
-    })();
-
-    /* ===========================================================
-       OPTIONAL: Tiny "stardust" click feedback (adds delight)
-       Bursts a few bright particles at the click position.
-       =========================================================== */
-    (function(){
-      const c = document.getElementById('galaxy'); if(!c) return;
-      const ctx = c.getContext('2d');
-      const dpr = Math.min(2, devicePixelRatio||1);
-
-      function burst(x, y, n=22) {
-        const particles = Array.from({length:n}, ()=>({
-          x:x*dpr, y:y*dpr,
-          vx:(Math.random()*2-1)*6*dpr,
-          vy:(Math.random()*2-1)*6*dpr,
-          life: 380+Math.random()*300
-        }));
-        let last = performance.now();
-        (function anim(t){
-          const dt = t - last; last = t;
-          ctx.save(); ctx.globalCompositeOperation='lighter';
-          particles.forEach(p=>{
-            p.x+=p.vx; p.y+=p.vy; p.vy+=0.02*dpr; p.life-=dt;
-            ctx.globalAlpha = Math.max(0, Math.min(1, p.life/600));
-            ctx.fillStyle='rgba(190,220,255,1)';
-            ctx.beginPath(); ctx.arc(p.x,p.y,1.2*dpr,0,Math.PI*2); ctx.fill();
-          });
-          ctx.restore();
-          for (let i=particles.length-1;i>=0;i--) if (particles[i].life<=0) particles.splice(i,1);
-          if (particles.length && !isReduced) requestAnimationFrame(anim);
-        })(last);
-      }
-
-      document.querySelectorAll('a,button').forEach(el=>{
-        el.addEventListener('click', (e)=>{
-          const rect = c.getBoundingClientRect();
-          burst(e.clientX-rect.left, e.clientY-rect.top);
-        });
-      });
-    })();
-  </script>
+// restore session
+if (sessionStorage.getItem('vault_ok') === '1') showVault();
+else setTimeout(() => document.getElementById('pw-input').focus(), 50);
+</script>
 </body>
 </html>
