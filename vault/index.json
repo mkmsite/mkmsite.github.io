@@ -1,6 +1,11 @@
 {
   "documents": [
     {
+      "title": "Montney Top Comp",
+      "file": "montney-top-comp.xlsx",
+      "date": "2026-06-12"
+    },
+    {
       "title": "Vault Install",
       "file": "vault_install.skill",
       "date": "2026-06-12"
